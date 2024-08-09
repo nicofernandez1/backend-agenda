@@ -10,11 +10,8 @@ morgan.token('prueba', (req) => {
     return JSON.stringify(req.body)
 })
 
-
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :prueba'))
-
 app.use(cors())
-
 app.use(express.static('dist'))
 
 let persons = [
@@ -80,6 +77,18 @@ app.post('/api/persons', (req, res) => {
     persons = persons.concat(person)
 
     res.json(person)
+})
+
+app.put('/api/persons/:id', (req, res) => {
+    const personUpdated = req.body
+
+    if (!personUpdated.name || !personUpdated.number) {
+        return res.status(400).json({error: 'content missing'})
+    }
+
+    persons = persons.map(person => person.id !== personUpdated.id ? person : personUpdated)
+
+    res.json(personUpdated)
 })
 
 app.delete('/api/persons/:id', (req, res) => {
